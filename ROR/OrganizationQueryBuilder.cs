@@ -7,7 +7,7 @@ namespace ROR.Net;
 
 public class OrganizationQueryBuilder
 {
-    private const int PageSize = 20;
+    private const int _pageSize = 20;
     private readonly OrganizationService _service;
 
     private readonly List<OrganizationStatus> _statusList = [];
@@ -112,7 +112,7 @@ public class OrganizationQueryBuilder
 
         if (results.Count == 0) return null;
 
-        OrganizationsResult first = results.First();
+        OrganizationsResult first = results[0];
         if (results.Count == 1) return first;
 
         return results.Skip(1).Aggregate(first, (current, other) => current.Combine(other));
@@ -121,10 +121,10 @@ public class OrganizationQueryBuilder
     private List<string> BuildQuery()
     {
         if (_numberOfResults <= 0) throw new ArgumentException("Number of results must be greater than 0");
-        if (_numberOfResults <= PageSize) return [BuildQuery(null)];
+        if (_numberOfResults <= _pageSize) return [BuildQuery(null)];
 
-        int pages = _numberOfResults / PageSize;
-        if (_numberOfResults % PageSize > 0) pages++;
+        int pages = _numberOfResults / _pageSize;
+        if (_numberOfResults % _pageSize > 0) pages++;
 
         return Enumerable.Range(1, pages).Select(page => BuildQuery(page)).ToList();
     }

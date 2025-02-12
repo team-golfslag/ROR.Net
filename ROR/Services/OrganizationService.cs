@@ -18,27 +18,22 @@ public sealed class OrganizationService(
 
     private const string BaseUrl = "https://api.ror.org/v2/organizations";
 
-    public async Task<OrganizationsResult?> PerformQuery(string query)
+    internal async Task<OrganizationsResult?> PerformQuery(string query)
     {
         var response = await httpClient.GetFromJsonAsync<OrganizationsResult>($"{BaseUrl}?{query}", _jsonSerializerOptions);
-        if (response is null)
-        {
-            logger.LogError("Failed to deserialize organizations from ROR");
-            return null;
-        }
-        return response;
+        if (response is not null) return response;
+
+        logger.LogError("Failed to deserialize organizations from ROR");
+        return null;
     }
 
     public async Task<Organization?> GetOrganization(string id)
     {
         var response = await httpClient.GetFromJsonAsync<Organization>($"{BaseUrl}/{id}", _jsonSerializerOptions);
-        if (response is null)
-        {
-            logger.LogError("Failed to deserialize organization from ROR");
-            return null;
-        }
+        if (response is not null) return response;
 
-        return response;
+        logger.LogError("Failed to deserialize organization from ROR");
+        return null;
     }
 
     public OrganizationQueryBuilder Query() => new(this);

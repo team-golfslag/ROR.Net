@@ -1,15 +1,6 @@
-using System.Text.Json.Serialization;
-
 namespace ROR.Net.Models;
 
-public class MetadataTypeCount
+public class MetadataTypeCount : MetadataCount
 {
-    [JsonPropertyName("count")]
-    public int Count { get; set; }
-
-    [JsonPropertyName("id")]
-    public OrganizationType Type { get; set; }
-
-    [JsonPropertyName("title")]
-    public required string Title { get; set; }
+    public OrganizationType Type => Enum.Parse<OrganizationType>(Id, true);
 }
