@@ -2,7 +2,7 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ROR", "ROR\ROR.csproj", "{DAF73421-2CB2-4F31-9EAB-DD48C2441A53}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ROR.Testing", "ROR.Testing\ROR.Testing.csproj", "{E6CE0FC4-7080-4D26-AE3A-CCD668EDF31F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ROR.Testing", "ROR.Testing\ROR.Testing.csproj", "{A9997D05-0D5F-4A78-A52A-1A82753FA621}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -14,9 +14,9 @@ Global
 		{DAF73421-2CB2-4F31-9EAB-DD48C2441A53}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DAF73421-2CB2-4F31-9EAB-DD48C2441A53}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DAF73421-2CB2-4F31-9EAB-DD48C2441A53}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E6CE0FC4-7080-4D26-AE3A-CCD668EDF31F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E6CE0FC4-7080-4D26-AE3A-CCD668EDF31F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E6CE0FC4-7080-4D26-AE3A-CCD668EDF31F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E6CE0FC4-7080-4D26-AE3A-CCD668EDF31F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A9997D05-0D5F-4A78-A52A-1A82753FA621}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A9997D05-0D5F-4A78-A52A-1A82753FA621}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A9997D05-0D5F-4A78-A52A-1A82753FA621}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A9997D05-0D5F-4A78-A52A-1A82753FA621}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

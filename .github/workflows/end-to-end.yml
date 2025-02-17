@@ -32,6 +32,14 @@ jobs:
           path: ~\sonar\cache
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
+      - name: Install Coverage Tool
+        shell: powershell
+        run: |
+          dotnet tool install --global dotnet-coverage
+      - name: Test the project
+        shell: powershell
+        run: |
+          dotnet-coverage collect "dotnet test" -f xml -o "coverage.xml"
       - name: Cache SonarQube Cloud scanner
         id: cache-sonar-scanner
         uses: actions/cache@v4
