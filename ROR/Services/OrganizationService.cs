@@ -10,38 +10,35 @@ public sealed class OrganizationService(
     HttpClient httpClient,
     ILogger<OrganizationService> logger) : IDisposable
 {
+    private const string BaseUrl = "https://api.ror.org/v2/organizations";
+
     private readonly JsonSerializerOptions _jsonSerializerOptions = new()
     {
         PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
-        Converters = { new JsonStringEnumConverter(JsonNamingPolicy.SnakeCaseLower) }
+        Converters = { new JsonStringEnumConverter(JsonNamingPolicy.SnakeCaseLower) },
     };
 
-    private const string BaseUrl = "https://api.ror.org/v2/organizations";
+    public void Dispose() => httpClient?.Dispose();
 
-    public async Task<OrganizationsResult?> PerformQuery(string query)
+    internal async Task<OrganizationsResult?> PerformQuery(string query)
     {
-        var response = await httpClient.GetFromJsonAsync<OrganizationsResult>($"{BaseUrl}?{query}", _jsonSerializerOptions);
-        if (response is null)
-        {
-            logger.LogError("Failed to deserialize organizations from ROR");
-            return null;
-        }
-        return response;
+        OrganizationsResult? response =
+            await httpClient.GetFromJsonAsync<OrganizationsResult>($"{BaseUrl}?{query}", _jsonSerializerOptions);
+        if (response is not null) return response;
+
+        logger.LogError("Failed to deserialize organizations from ROR");
+        return null;
     }
 
     public async Task<Organization?> GetOrganization(string id)
     {
-        var response = await httpClient.GetFromJsonAsync<Organization>($"{BaseUrl}/{id}", _jsonSerializerOptions);
-        if (response is null)
-        {
-            logger.LogError("Failed to deserialize organization from ROR");
-            return null;
-        }
+        Organization? response =
+            await httpClient.GetFromJsonAsync<Organization>($"{BaseUrl}/{id}", _jsonSerializerOptions);
+        if (response is not null) return response;
 
-        return response;
+        logger.LogError("Failed to deserialize organization from ROR");
+        return null;
     }
 
     public OrganizationQueryBuilder Query() => new(this);
-
-    public void Dispose() => httpClient?.Dispose();
 }

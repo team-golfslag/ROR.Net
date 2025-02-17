@@ -7,15 +7,15 @@ namespace ROR.Net;
 
 public class OrganizationQueryBuilder
 {
-    private const int PageSize = 20;
+    private const int _pageSize = 20;
+    private readonly List<string> _organizationContinentCodeList = [];
+    private readonly List<string> _organizationContinentNameList = [];
+    private readonly List<string> _organizationCountryCodeList = [];
+    private readonly List<string> _organizationCountryNameList = [];
     private readonly OrganizationService _service;
 
     private readonly List<OrganizationStatus> _statusList = [];
     private readonly List<OrganizationType> _typeList = [];
-    private readonly List<string> _organizationCountryCodeList = [];
-    private readonly List<string> _organizationCountryNameList = [];
-    private readonly List<string> _organizationContinentCodeList = [];
-    private readonly List<string> _organizationContinentNameList = [];
 
     private DateTime? _createdDateFrom;
     private DateTime? _createdDateUntil;
@@ -26,7 +26,10 @@ public class OrganizationQueryBuilder
     private int _numberOfResults = 20;
     private string? _query;
 
-    internal OrganizationQueryBuilder(OrganizationService service) => _service = service;
+    internal OrganizationQueryBuilder(OrganizationService service)
+    {
+        _service = service;
+    }
 
     public OrganizationQueryBuilder WithStatus(OrganizationStatus status)
     {
@@ -102,8 +105,8 @@ public class OrganizationQueryBuilder
 
     public async Task<OrganizationsResult?> Execute()
     {
-        var query = BuildQuery();
-        var results = new List<OrganizationsResult>();
+        List<string> query = BuildQuery();
+        List<OrganizationsResult> results = new();
         foreach (string q in query)
         {
             OrganizationsResult? result = await _service.PerformQuery(q);
@@ -112,7 +115,7 @@ public class OrganizationQueryBuilder
 
         if (results.Count == 0) return null;
 
-        OrganizationsResult first = results.First();
+        OrganizationsResult first = results[0];
         if (results.Count == 1) return first;
 
         return results.Skip(1).Aggregate(first, (current, other) => current.Combine(other));
@@ -121,40 +124,56 @@ public class OrganizationQueryBuilder
     private List<string> BuildQuery()
     {
         if (_numberOfResults <= 0) throw new ArgumentException("Number of results must be greater than 0");
-        if (_numberOfResults <= PageSize) return [BuildQuery(null)];
+        if (_numberOfResults <= _pageSize) return [BuildQuery(null)];
 
-        int pages = _numberOfResults / PageSize;
-        if (_numberOfResults % PageSize > 0) pages++;
+        int pages = _numberOfResults / _pageSize;
+        if (_numberOfResults % _pageSize > 0) pages++;
 
         return Enumerable.Range(1, pages).Select(page => BuildQuery(page)).ToList();
     }
 
     private string BuildQuery(int? page)
     {
-        var components = new List<string>();
+        List<string> components = new();
         if (page.HasValue) components.Add("page=" + page);
 
-        var filter = new StringBuilder();
-        filter.Append(string.Join(",", _statusList.Select(s => "status:" + s.ToString().ToLower())));
-        filter.Append(string.Join(",", _typeList.Select(t => "types:" + t.ToString().ToLower())));
-        filter.Append(string.Join(",", _organizationCountryCodeList.Select(cc => "country.country_code:" +  HttpUtility.UrlEncode(cc))));
-        filter.Append(string.Join(",", _organizationCountryNameList.Select(cn => "locations.geonames_details.country_name:" +  HttpUtility.UrlEncode(cn))));
-        filter.Append(string.Join(",", _organizationContinentCodeList.Select(cc => "locations.geonames_details.continent_code:" +  HttpUtility.UrlEncode(cc))));
-        filter.Append(string.Join(",", _organizationContinentNameList.Select(cn => "locations.geonames_details.continent_name:" +  HttpUtility.UrlEncode(cn))));
+        List<string> filters = new();
+        filters.Add(string.Join(",", _statusList.Select(s => "status:" + s.ToString().ToLower())));
+        filters.Add(string.Join(",", _typeList.Select(t => "types:" + t.ToString().ToLower())));
+        filters.Add(string.Join(
+                          ",",
+                          _organizationCountryCodeList.Select(
+                              cc => "country.country_code:" + HttpUtility.UrlEncode(cc))));
+        filters.Add(string.Join(
+                          ",",
+                          _organizationCountryNameList.Select(
+                              cn => "locations.geonames_details.country_name:" + HttpUtility.UrlEncode(cn))));
+        filters.Add(string.Join(
+                          ",",
+                          _organizationContinentCodeList.Select(
+                              cc => "locations.geonames_details.continent_code:" + HttpUtility.UrlEncode(cc))));
+        filters.Add(string.Join(
+                          ",",
+                          _organizationContinentNameList.Select(
+                              cn => "locations.geonames_details.continent_name:" + HttpUtility.UrlEncode(cn))));
 
-        if (filter.Length > 0) components.Add("filter=" +  HttpUtility.UrlEncode(filter.ToString()));
+        if (filters.Count > 0)
+            components.Add("filter=" + HttpUtility.UrlEncode(string.Join(",", filters.Where(f => f.Length > 0))));
 
         if (_query != null) components.Add("query=" + HttpUtility.UrlEncode(_query));
 
-        var advancedQuery = new StringBuilder();
+        StringBuilder advancedQuery = new();
         if (_createdDateFrom.HasValue || _createdDateUntil.HasValue)
-            components.Add("admin.created.date" +  HttpUtility.UrlEncode(GetFormattedDateRange(_createdDateFrom, _createdDateUntil)));
+            components.Add("admin.created.date" +
+                           HttpUtility.UrlEncode(GetFormattedDateRange(_createdDateFrom, _createdDateUntil)));
 
         if (_modifiedDateFrom.HasValue || _modifiedDateUntil.HasValue)
-            components.Add("admin.last_modified.date" +  HttpUtility.UrlEncode(GetFormattedDateRange(_modifiedDateFrom, _modifiedDateUntil)));
+            components.Add("admin.last_modified.date" +
+                           HttpUtility.UrlEncode(GetFormattedDateRange(_modifiedDateFrom, _modifiedDateUntil)));
 
-        if (advancedQuery.Length > 0) components.Add("advanced_query=" +  HttpUtility.UrlEncode(advancedQuery.ToString()));
-        
+        if (advancedQuery.Length > 0)
+            components.Add("advanced_query=" + HttpUtility.UrlEncode(advancedQuery.ToString()));
+
         return string.Join("&", components);
     }
 

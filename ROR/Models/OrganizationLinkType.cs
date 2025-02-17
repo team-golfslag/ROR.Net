@@ -6,5 +6,5 @@ namespace ROR.Net.Models;
 public enum OrganizationLinkType
 {
     Website,
-    Wikipedia
+    Wikipedia,
 }

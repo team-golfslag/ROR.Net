@@ -1,43 +1,38 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
+using Moq;
 using ROR.Net.Models;
 using ROR.Net.Services;
 
 namespace ROR.Testing;
 
-[TestFixture]
-public class SingleRecordTest
+public class SingleRecordTest : IAsyncLifetime
 {
     private OrganizationService _service;
 
-    [SetUp]
-    public void Setup()
+    public Task InitializeAsync()
     {
-        ServiceProvider serviceProvider = new ServiceCollection()
-            .AddLogging()
-            .BuildServiceProvider();
-
-        var factory = serviceProvider.GetService<ILoggerFactory>();
-        if (factory == null) throw new Exception("Failed to get logger factory");
-
-        var logger = factory.CreateLogger<OrganizationService>();
-
-        var httpClient = new HttpClient();
+        ILogger<OrganizationService> logger = Mock.Of<ILogger<OrganizationService>>();
+        HttpClient httpClient = new();
         _service = new OrganizationService(httpClient, logger);
+
+        return Task.CompletedTask;
     }
 
-    [Test]
-    [TestCase("028z9kw20", OrganizationNameType.Label, "Hogeschool Utrecht")]
-    [TestCase("058kzes98", OrganizationNameType.Acronym, "UMU")]
+    public Task DisposeAsync()
+    {
+        _service.Dispose();
+        return Task.CompletedTask;
+    }
+
+    [Theory]
+    [InlineData("028z9kw20", OrganizationNameType.Label, "Hogeschool Utrecht")]
+    [InlineData("058kzes98", OrganizationNameType.Acronym, "UMU")]
     public async Task TestSingleRecordName(string id, OrganizationNameType type, string expectedName)
     {
         Organization? organization = await _service.GetOrganization(id);
-        Assert.That(organization, Is.Not.Null);
+        Assert.NotNull(organization);
 
         string name = organization.Names.First(n => n.Types.Contains(type)).Value;
-        Assert.That(name, Is.EqualTo(expectedName));
+        Assert.Equal(expectedName, name);
     }
-
-    [TearDown]
-    public void TearDown() => _service.Dispose();
 }

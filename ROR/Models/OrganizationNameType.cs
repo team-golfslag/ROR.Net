@@ -11,6 +11,7 @@ public enum OrganizationNameType
     /// (e.g., "UCLA" for “University of California, Los Angeles”).
     /// </summary>
     Acronym,
+
     /// <summary>
     /// Used for alternate forms of the organization name that may be now or previously in common use but are not
     /// official according to the organization's current website or policy
@@ -22,12 +23,14 @@ public enum OrganizationNameType
     /// but future iterations of the ROR schema may differentiate between the two.
     /// </remarks>
     Alias,
+
     /// <summary>
     /// Displays equivalent forms of the organization name in one or more languages.
     /// </summary>
     Label,
+
     /// <summary>
     /// The name of the organization displayed most prominently on records in ROR's web search.
     /// </summary>
-    RorDisplay
+    RorDisplay,
 }
