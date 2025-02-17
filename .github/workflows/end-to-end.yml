@@ -14,7 +14,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  test:
+  end-to-end:
     name: Build .NET and Analyse with SonarCloud
     runs-on: windows-latest
     steps:
