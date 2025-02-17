@@ -31,6 +31,9 @@ public class TestQuery : IAsyncLifetime
             .WithQuery("Utrecht")
             .WithType(OrganizationType.Education)
             .WithNumberOfResults(100)
+            .WithCountryCode("NL")
+            .WithCountryCode("EU")
+            .WithStatus(OrganizationStatus.Active)
             .Execute();
 
         Assert.NotNull(result);

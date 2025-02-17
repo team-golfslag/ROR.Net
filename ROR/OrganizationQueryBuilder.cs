@@ -137,27 +137,28 @@ public class OrganizationQueryBuilder
         List<string> components = new();
         if (page.HasValue) components.Add("page=" + page);
 
-        StringBuilder filter = new();
-        filter.Append(string.Join(",", _statusList.Select(s => "status:" + s.ToString().ToLower())));
-        filter.Append(string.Join(",", _typeList.Select(t => "types:" + t.ToString().ToLower())));
-        filter.Append(string.Join(
+        List<string> filters = new();
+        filters.Add(string.Join(",", _statusList.Select(s => "status:" + s.ToString().ToLower())));
+        filters.Add(string.Join(",", _typeList.Select(t => "types:" + t.ToString().ToLower())));
+        filters.Add(string.Join(
                           ",",
                           _organizationCountryCodeList.Select(
                               cc => "country.country_code:" + HttpUtility.UrlEncode(cc))));
-        filter.Append(string.Join(
+        filters.Add(string.Join(
                           ",",
                           _organizationCountryNameList.Select(
                               cn => "locations.geonames_details.country_name:" + HttpUtility.UrlEncode(cn))));
-        filter.Append(string.Join(
+        filters.Add(string.Join(
                           ",",
                           _organizationContinentCodeList.Select(
                               cc => "locations.geonames_details.continent_code:" + HttpUtility.UrlEncode(cc))));
-        filter.Append(string.Join(
+        filters.Add(string.Join(
                           ",",
                           _organizationContinentNameList.Select(
                               cn => "locations.geonames_details.continent_name:" + HttpUtility.UrlEncode(cn))));
 
-        if (filter.Length > 0) components.Add("filter=" + HttpUtility.UrlEncode(filter.ToString()));
+        if (filters.Count > 0)
+            components.Add("filter=" + HttpUtility.UrlEncode(string.Join(",", filters.Where(f => f.Length > 0))));
 
         if (_query != null) components.Add("query=" + HttpUtility.UrlEncode(_query));
 
