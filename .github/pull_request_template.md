@@ -1,7 +1,7 @@
 ## YouTrack tasks
 
 [Add the ID of the YouTrack tasks that are related to this PR] \
-[Example: V25I-X]
+[Example: CX-19]
 
 ## Description
 
@@ -26,7 +26,7 @@ If something is not possible, please leave a comment explaining why.
 
 - [ ] Code satisfies requirement as currently specified in YouTrack
 - [ ] The not-so-happy flow and errors are handled gracefully
-- [ ] Project builds without errors
+- [ ] Project builds without errors and warnings
 - [ ] Any decisions or changes to the requirements have been added to the task description in YouTrack
 - [ ] Docs have been updated/created for altered/added code
 - [ ] Code is well-commented
