@@ -32,14 +32,6 @@ jobs:
           path: ~\sonar\cache
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
-      - name: Install Coverage Tool
-        shell: powershell
-        run: |
-          dotnet tool install --global dotnet-coverage
-      - name: Test the project
-        shell: powershell
-        run: |
-          dotnet-coverage collect "dotnet test" -f xml -o "coverage.xml"
       - name: Cache SonarQube Cloud scanner
         id: cache-sonar-scanner
         uses: actions/cache@v4
@@ -53,6 +45,10 @@ jobs:
         run: |
           New-Item -Path .\.sonar\scanner -ItemType Directory
           dotnet tool update dotnet-sonarscanner --tool-path .\.sonar\scanner
+      - name: Install Coverage Tool
+        shell: powershell
+        run: |
+          dotnet tool install --global dotnet-coverage
       - name: Build and analyze
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -61,3 +57,7 @@ jobs:
           .\.sonar\scanner\dotnet-sonarscanner begin /k:"team-golfslag_ROR.Net" /o:"team-golfslag" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
           dotnet build
           .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
+      - name: Test the project
+        shell: powershell
+        run: |
+          dotnet-coverage collect "dotnet test" -f xml -o "coverage.xml"
