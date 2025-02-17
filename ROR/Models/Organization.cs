@@ -19,7 +19,7 @@ public class Organization
     /// <summary>
     /// The domains registered to a particular institution, not including the protocol, path portions,
     /// or query parameters that may exist in the URL for the organization's website.
-    /// An organization's website is stored in the <see cref="Links"/> field.
+    /// An organization's website is stored in the <see cref="Links" /> field.
     /// </summary>
     [JsonPropertyName("domains")]
     public List<string>? Domains { get; set; }
@@ -33,7 +33,7 @@ public class Organization
     /// <summary>
     /// Other identifiers for the organization (if available).
     /// ROR maps its IDs to four types of external identifiers:
-    ///     GRID, Wikidata, ISNI, and the Crossref Open Funder Registry (formerly “FundRef”).
+    /// GRID, Wikidata, ISNI, and the Crossref Open Funder Registry (formerly “FundRef”).
     /// </summary>
     [JsonPropertyName("external_ids")]
     public List<OrganizationExternalId>? ExternalIds { get; set; }

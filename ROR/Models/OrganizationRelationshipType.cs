@@ -9,5 +9,5 @@ public enum OrganizationRelationshipType
     Parent,
     Child,
     Predecessor,
-    Successor
+    Successor,
 }

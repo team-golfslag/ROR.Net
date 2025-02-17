@@ -1,7 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
-
 using Moq;
-
 using ROR.Net.Models;
 using ROR.Net.Services;
 
@@ -15,7 +13,7 @@ public class SingleRecordTest : IAsyncLifetime
     {
         ILogger<OrganizationService> logger = Mock.Of<ILogger<OrganizationService>>();
         HttpClient httpClient = new();
-        _service = new(httpClient, logger);
+        _service = new OrganizationService(httpClient, logger);
 
         return Task.CompletedTask;
     }

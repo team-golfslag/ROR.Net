@@ -16,14 +16,12 @@ public class OrganizationsResult : ICombinable<OrganizationsResult>
     [JsonPropertyName("time_taken")]
     public int TimeTaken { get; set; }
 
-    public OrganizationsResult Combine(OrganizationsResult other)
-    {
-        return new OrganizationsResult
+    public OrganizationsResult Combine(OrganizationsResult other) =>
+        new()
         {
             Organizations = Organizations.Concat(other.Organizations).ToList(),
             Metadata = Metadata.Combine(other.Metadata),
             NumberOfResults = NumberOfResults + other.NumberOfResults,
-            TimeTaken = TimeTaken + other.TimeTaken
+            TimeTaken = TimeTaken + other.TimeTaken,
         };
-    }
 }

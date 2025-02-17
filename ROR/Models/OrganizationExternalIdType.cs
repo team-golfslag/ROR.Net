@@ -8,5 +8,5 @@ public enum OrganizationExternalIdType
     Fundref,
     Grid,
     Isni,
-    Wikidata
+    Wikidata,
 }

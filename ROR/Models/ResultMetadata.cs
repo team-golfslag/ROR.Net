@@ -16,14 +16,12 @@ public class ResultMetadata : ICombinable<ResultMetadata>
     [JsonPropertyName("types")]
     public required List<MetadataTypeCount> Types { get; set; }
 
-    public ResultMetadata Combine(ResultMetadata other)
-    {
-        return new ResultMetadata
+    public ResultMetadata Combine(ResultMetadata other) =>
+        new()
         {
             Continents = MetadataCount.CollectCounts(Continents, other.Continents),
             Countries = MetadataCount.CollectCounts(Countries, other.Countries),
             Statuses = MetadataCount.CollectCounts(Statuses, other.Statuses),
-            Types = MetadataCount.CollectCounts(Types, other.Types)
+            Types = MetadataCount.CollectCounts(Types, other.Types),
         };
-    }
 }

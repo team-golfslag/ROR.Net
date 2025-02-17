@@ -1,8 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
+using Moq;
 using ROR.Net.Models;
 using ROR.Net.Services;
-
-using Moq;
 
 namespace ROR.Testing;
 
@@ -12,10 +11,10 @@ public class TestQuery : IAsyncLifetime
 
     public Task InitializeAsync()
     {
-        var httpClient = new HttpClient();
-        var logger = Mock.Of<ILogger<OrganizationService>>();
+        HttpClient httpClient = new();
+        ILogger<OrganizationService> logger = Mock.Of<ILogger<OrganizationService>>();
 
-        _service = new(httpClient, logger);
+        _service = new OrganizationService(httpClient, logger);
         return Task.CompletedTask;
     }
 
