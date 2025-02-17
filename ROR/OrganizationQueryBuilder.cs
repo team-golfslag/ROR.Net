@@ -158,29 +158,35 @@ public class OrganizationQueryBuilder
                               cn => "locations.geonames_details.continent_name:" + HttpUtility.UrlEncode(cn))));
 
         if (filters.Count > 0)
-            components.Add("filter=" + HttpUtility.UrlEncode(string.Join(",", filters.Where(f => f.Length > 0))));
+            components.Add("filter=" + string.Join(",", filters.Where(f => f.Length > 0)));
 
-        if (_query != null) components.Add("query=" + HttpUtility.UrlEncode(_query));
-
-        StringBuilder advancedQuery = new();
+        List<string> advancedQuery = new();
         if (_createdDateFrom.HasValue || _createdDateUntil.HasValue)
-            components.Add("admin.created.date" +
-                           HttpUtility.UrlEncode(GetFormattedDateRange(_createdDateFrom, _createdDateUntil)));
+            advancedQuery.Add("admin.created.date:" +
+                           GetFormattedDateRange(_createdDateFrom, _createdDateUntil));
 
         if (_modifiedDateFrom.HasValue || _modifiedDateUntil.HasValue)
-            components.Add("admin.last_modified.date" +
-                           HttpUtility.UrlEncode(GetFormattedDateRange(_modifiedDateFrom, _modifiedDateUntil)));
+            advancedQuery.Add("admin.last_modified.date:" +
+                           GetFormattedDateRange(_modifiedDateFrom, _modifiedDateUntil));
 
-        if (advancedQuery.Length > 0)
-            components.Add("advanced_query=" + HttpUtility.UrlEncode(advancedQuery.ToString()));
+        if (_query != null && advancedQuery.Count > 0)
+            advancedQuery.Add(HttpUtility.UrlEncode(_query));
+        else
+            components.Add("query=" + HttpUtility.UrlEncode(_query));
+
+        if (advancedQuery.Count > 0)
+            components.Add("query.advanced=" + string.Join("%20AND%20", advancedQuery));
 
         return string.Join("&", components);
     }
 
     private static string GetFormattedDateRange(DateTime? from, DateTime? until)
     {
-        string fromString = from.HasValue ? from.Value.ToString("yyyy-MM-dd") : "*";
-        string untilString = until.HasValue ? until.Value.ToString("yyyy-MM-dd") : "*";
-        return $"{{{fromString} TO% {untilString}}}";
+        from ??= DateTime.MinValue;
+        until ??= DateTime.MaxValue;
+
+        string fromString = from.Value.ToString("yyyy-MM-dd");
+        string untilString = until.Value.ToString("yyyy-MM-dd");
+        return $"%5B{fromString}%20TO%20{untilString}%5D";
     }
 }
