@@ -34,6 +34,7 @@ public class TestQuery : IAsyncLifetime
             .WithCountryCode("NL")
             .WithCountryCode("EU")
             .WithStatus(OrganizationStatus.Active)
+            .CreatedDateUntil(DateTime.Now)
             .Execute();
 
         Assert.NotNull(result);
