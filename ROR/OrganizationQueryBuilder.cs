@@ -106,7 +106,7 @@ public class OrganizationQueryBuilder
     public async Task<OrganizationsResult?> Execute()
     {
         List<string> query = BuildQuery();
-        List<OrganizationsResult> results = new();
+        List<OrganizationsResult> results = [];
         foreach (string q in query)
         {
             OrganizationsResult? result = await _service.PerformQuery(q);
@@ -121,10 +121,12 @@ public class OrganizationQueryBuilder
         return results.Skip(1).Aggregate(first, (current, other) => current.Combine(other));
     }
 
-    private List<string> BuildQuery()
+    public List<string> BuildQuery()
     {
-        if (_numberOfResults <= 0) throw new ArgumentException("Number of results must be greater than 0");
-        if (_numberOfResults <= _pageSize) return [BuildQuery(null)];
+        if (_numberOfResults <= 0)
+            throw new ArgumentException("Number of results must be greater than 0");
+        if (_numberOfResults <= _pageSize)
+            return [BuildQuery(null)];
 
         int pages = _numberOfResults / _pageSize;
         if (_numberOfResults % _pageSize > 0) pages++;
