@@ -22,22 +22,34 @@ public sealed class OrganizationService(
 
     internal async Task<OrganizationsResult?> PerformQuery(string query)
     {
-        OrganizationsResult? response =
-            await httpClient.GetFromJsonAsync<OrganizationsResult>($"{BaseUrl}?{query}", _jsonSerializerOptions);
-        if (response is not null) return response;
-
-        logger.LogError("Failed to deserialize organizations from ROR");
-        return null;
+        try
+        {
+            return await httpClient.GetFromJsonAsync<OrganizationsResult>($"{BaseUrl}?{query}", _jsonSerializerOptions);
+        } catch (HttpRequestException e)
+        {
+            logger.LogError(e, "Failed to get organizations from ROR");
+            return null;
+        } catch (JsonException e)
+        {
+            logger.LogError(e, "Failed to deserialize organizations from ROR");
+            return null;
+        }
     }
 
     public async Task<Organization?> GetOrganization(string id)
     {
-        Organization? response =
-            await httpClient.GetFromJsonAsync<Organization>($"{BaseUrl}/{id}", _jsonSerializerOptions);
-        if (response is not null) return response;
-
-        logger.LogError("Failed to deserialize organization from ROR");
-        return null;
+        try
+        {
+            return await httpClient.GetFromJsonAsync<Organization>($"{BaseUrl}/{id}", _jsonSerializerOptions);
+        } catch (HttpRequestException e)
+        {
+            logger.LogError(e, "Failed to get organization from ROR");
+            return null;
+        } catch (JsonException e)
+        {
+            logger.LogError(e, "Failed to deserialize organization from ROR");
+            return null;
+        }
     }
 
     public OrganizationQueryBuilder Query() => new(this);
