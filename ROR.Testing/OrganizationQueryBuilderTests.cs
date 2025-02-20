@@ -204,7 +204,7 @@ public class OrganizationQueryBuilderTests
             .ModifiedDateUntil(new DateTime(2022, 1, 1, 0, 0, 0, DateTimeKind.Utc))
             .WithNumberOfResults(20);
 
-        string query = queryBuilder.BuildQuery()[0];
+        string query = queryBuilder.BuildQueries()[0];
 
         Assert.Contains("status:active", query);
         Assert.Contains("types:education", query);

@@ -8,9 +8,6 @@ namespace ROR.Net.Services;
 /// <summary>
 /// Service to interact with the ROR API
 /// </summary>
-/// <param name="httpClient"></param>
-/// <param name="logger"></param>
-/// <param name="options"></param>
 public sealed class OrganizationService(
     HttpClient httpClient,
     ILogger<OrganizationService> logger,
@@ -23,7 +20,6 @@ public sealed class OrganizationService(
     /// <summary>
     /// Perform a query to the ROR API
     /// </summary>
-    /// <param name="query"></param>
     /// <returns> The result of the query </returns>
     internal async Task<OrganizationsResult?> PerformQuery(string query)
     {

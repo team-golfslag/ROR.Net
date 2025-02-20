@@ -229,7 +229,7 @@ public class OrganizationQueryBuilder
     public async Task<OrganizationsResult?> Execute()
     {
         // Build the query
-        List<string> query = BuildQuery();
+        List<string> query = BuildQueries();
 
         // Perform the query
         List<OrganizationsResult> results = [];
@@ -251,9 +251,10 @@ public class OrganizationQueryBuilder
     /// <summary>
     /// Build the query.
     /// </summary>
-    /// <returns> The query. </returns>
+    /// <returns> The queries. </returns>
+    /// <remarks> returns more than 1 query when the number of results is greater than the page size. </remarks>
     /// <exception cref="ArgumentException"> Number of results must be greater than 0 </exception>
-    public List<string> BuildQuery()
+    public List<string> BuildQueries()
     {
         int results = _numberOfResults ?? PageSize;
         if (results <= PageSize)
@@ -268,8 +269,9 @@ public class OrganizationQueryBuilder
     /// <summary>
     /// Build the query for a specific page.
     /// </summary>
+    ///
     /// <param name="page">The page to build the query for.</param>
-    /// <returns> The query. </returns>
+    /// <returns> The query </returns>
     private string BuildQuery(int? page)
     {
         // Build the components of the query
