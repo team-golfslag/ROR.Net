@@ -17,22 +17,22 @@ public class ResultMetadataTests
         Continents =
         [
             new MetadataContinentCount { Count = 3, Id = "EU", Title = "Europe" },
-            new MetadataContinentCount { Count = 4, Id = "AS", Title = "Asia" }
+            new MetadataContinentCount { Count = 4, Id = "AS", Title = "Asia" },
         ],
         Countries =
         [
             new MetadataCountryCount { Count = 5, Id = "NL", Title = "Netherlands" },
-            new MetadataCountryCount { Count = 8, Id = "DE", Title = "Germany" }
+            new MetadataCountryCount { Count = 8, Id = "DE", Title = "Germany" },
         ],
         Statuses =
         [
             new MetadataStatusCount { Count = 10, Id = "active", Title = "Active" },
-            new MetadataStatusCount { Count = 5, Id = "inactive", Title = "Inactive" }
+            new MetadataStatusCount { Count = 5, Id = "inactive", Title = "Inactive" },
         ],
         Types =
         [
             new MetadataTypeCount { Count = 20, Id = "university", Title = "University" },
-            new MetadataTypeCount { Count = 4, Id = "research_institute", Title = "Research Institute" }
+            new MetadataTypeCount { Count = 4, Id = "research_institute", Title = "Research Institute" },
         ],
     };
 

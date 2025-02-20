@@ -6,7 +6,6 @@ using Moq.Protected;
 using ROR.Net;
 using ROR.Net.Models;
 using ROR.Net.Services;
-using Xunit;
 
 namespace ROR.Testing;
 
@@ -27,7 +26,7 @@ public class OrganizationQueryBuilderTests
     [Fact]
     public async Task Execute_ShouldReturnOrganizationsResult_WhenResponseIsValid()
     {
-        Organization organization = new Organization
+        Organization organization = new()
         {
             Id = "123",
             Admin = new OrganizationAdmin
@@ -43,7 +42,9 @@ public class OrganizationQueryBuilderTests
                     SchemaVersion = "v1.1",
                 },
             },
-            Locations = [new OrganizationLocation
+            Locations =
+            [
+                new OrganizationLocation
                 {
                     GeonamesId = 1283416,
                     GeonamesDetails = new GeonamesDetails
@@ -54,12 +55,14 @@ public class OrganizationQueryBuilderTests
                     },
                 },
             ],
-            Names = [new OrganizationName
+            Names =
+            [
+                new OrganizationName
                 {
                     Value = "Test Organization",
                     Types = [OrganizationNameType.Label],
                     Lang = "en",
-                }
+                },
             ],
             Types = [OrganizationType.Facility],
         };
@@ -162,7 +165,6 @@ public class OrganizationQueryBuilderTests
 
         Assert.Throws<ArgumentException>(() => queryBuilder.WithNumberOfResults(0));
     }
-
 
     [Fact]
     public void BuildQuery_ShouldThrowArgumentException_WhenNumberOfResultsIsSetMultipleTimes()

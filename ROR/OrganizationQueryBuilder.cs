@@ -7,13 +7,12 @@ namespace ROR.Net;
 public class OrganizationQueryBuilder
 {
     private const int PageSize = 20;
-    private readonly OrganizationService _service;
-
 
     private readonly List<string> _organizationContinentCodeList = [];
     private readonly List<string> _organizationContinentNameList = [];
     private readonly List<string> _organizationCountryCodeList = [];
     private readonly List<string> _organizationCountryNameList = [];
+    private readonly OrganizationService _service;
     private readonly List<OrganizationStatus> _statusList = [];
     private readonly List<OrganizationType> _typeList = [];
 
@@ -26,8 +25,11 @@ public class OrganizationQueryBuilder
     private int? _numberOfResults;
     private string? _query;
 
-    internal OrganizationQueryBuilder(OrganizationService service) => _service = service;
-    
+    internal OrganizationQueryBuilder(OrganizationService service)
+    {
+        _service = service;
+    }
+
     public OrganizationQueryBuilder WithStatus(OrganizationStatus status)
     {
         _statusList.Add(status);
@@ -191,7 +193,7 @@ public class OrganizationQueryBuilder
         if (_query != null && advancedQuery.Count > 0)
             advancedQuery.Add(HttpUtility.UrlEncode(_query));
         else
-        // Otherwise, add only the query
+            // Otherwise, add only the query
             components.Add("query=" + HttpUtility.UrlEncode(_query));
 
         // If there is an advanced query, add it
@@ -201,7 +203,7 @@ public class OrganizationQueryBuilder
         // Return the query
         return string.Join("&", components);
     }
-    
+
     private static string GetFormattedDateRange(DateTime? from, DateTime? until)
     {
         from ??= DateTime.MinValue;

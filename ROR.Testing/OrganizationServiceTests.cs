@@ -11,22 +11,21 @@ namespace ROR.Testing;
 public class OrganizationServiceTests
 {
     private readonly Mock<HttpMessageHandler> _httpMessageHandlerMock;
-    private readonly HttpClient _httpClient;
     private readonly Mock<ILogger<OrganizationService>> _loggerMock;
     private readonly OrganizationService _organizationService;
 
     public OrganizationServiceTests()
     {
         _httpMessageHandlerMock = new Mock<HttpMessageHandler>();
-        _httpClient = new HttpClient(_httpMessageHandlerMock.Object);
+        HttpClient httpClient = new(_httpMessageHandlerMock.Object);
         _loggerMock = new Mock<ILogger<OrganizationService>>();
-        _organizationService = new OrganizationService(_httpClient, _loggerMock.Object);
+        _organizationService = new OrganizationService(httpClient, _loggerMock.Object);
     }
 
     [Fact]
     public async Task GetOrganization_ShouldReturnOrganization_WhenResponseIsValid()
     {
-        Organization organization = new Organization
+        Organization organization = new()
         {
             Id = "123",
             Admin = new OrganizationAdmin
@@ -42,7 +41,9 @@ public class OrganizationServiceTests
                     SchemaVersion = "v1.1",
                 },
             },
-            Locations = [new OrganizationLocation
+            Locations =
+            [
+                new OrganizationLocation
                 {
                     GeonamesId = 1283416,
                     GeonamesDetails = new GeonamesDetails
@@ -53,14 +54,16 @@ public class OrganizationServiceTests
                     },
                 },
             ],
-            Names = [new OrganizationName
+            Names =
+            [
+                new OrganizationName
                 {
                     Value = "Test Organization",
                     Types = [OrganizationNameType.Label],
                     Lang = "en",
-                }
+                },
             ],
-            Types = [OrganizationType.Facility]
+            Types = [OrganizationType.Facility],
         };
         _httpMessageHandlerMock.Protected()
             .Setup<Task<HttpResponseMessage>>(
@@ -70,7 +73,7 @@ public class OrganizationServiceTests
             .ReturnsAsync(new HttpResponseMessage
             {
                 StatusCode = HttpStatusCode.OK,
-                Content = JsonContent.Create(organization)
+                Content = JsonContent.Create(organization),
             });
 
         // Act
@@ -115,7 +118,7 @@ public class OrganizationServiceTests
             .ReturnsAsync(new HttpResponseMessage
             {
                 StatusCode = HttpStatusCode.OK,
-                Content = new StringContent("Invalid JSON")
+                Content = new StringContent("Invalid JSON"),
             });
 
         Organization? result = await _organizationService.GetOrganization("123");
