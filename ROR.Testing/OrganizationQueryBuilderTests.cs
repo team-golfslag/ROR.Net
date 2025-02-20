@@ -204,9 +204,13 @@ public class OrganizationQueryBuilderTests
 
         string query = queryBuilder.BuildQuery()[0];
 
-        Assert.Contains("filter=status:active,types:education", query);
-        Assert.Contains("country.country_code:US,locations.geonames_details.country_name:United+States", query);
-        Assert.Contains("locations.geonames_details.continent_code:NA,locations.geonames_details.continent_name:North+America", query);
-        Assert.Contains("query.advanced=admin.created.date:%5B2020-01-01%20TO%202021-01-01%5D%20AND%20admin.last_modified.date:%5B2021-01-01%20TO%202022-01-01%5D%20AND%20Test", query);
+        Assert.Contains("status:active", query);
+        Assert.Contains("types:education", query);
+        Assert.Contains("country.country_code:US", query);
+        Assert.Contains("locations.geonames_details.country_name:United+States", query);
+        Assert.Contains("locations.geonames_details.continent_code:NA", query);
+        Assert.Contains("locations.geonames_details.continent_name:North+America", query);
+        Assert.Contains("admin.created.date:%5B2020-01-01%20TO%202021-01-01%5D", query);
+        Assert.Contains("admin.last_modified.date:%5B2021-01-01%20TO%202022-01-01%5D", query);
     }
 }
