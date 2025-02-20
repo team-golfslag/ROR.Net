@@ -3,12 +3,6 @@ name: End-to-end tests (Pull Request)
 on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
-    paths:
-      - "**.cs"
-      - "**.csproj"
-      - "**.sln"
-      - "**.json"
-      - "**.yml"
 
 concurrency:
   group: end-to-end-${{ github.head_ref }}
