@@ -5,6 +5,12 @@ using ROR.Net.Models;
 
 namespace ROR.Net.Services;
 
+/// <summary>
+/// Service to interact with the ROR API
+/// </summary>
+/// <param name="httpClient"></param>
+/// <param name="logger"></param>
+/// <param name="options"></param>
 public sealed class OrganizationService(
     HttpClient httpClient,
     ILogger<OrganizationService> logger,
@@ -14,6 +20,11 @@ public sealed class OrganizationService(
 
     public void Dispose() => httpClient?.Dispose();
 
+    /// <summary>
+    /// Perform a query to the ROR API
+    /// </summary>
+    /// <param name="query"></param>
+    /// <returns> The result of the query </returns>
     internal async Task<OrganizationsResult?> PerformQuery(string query)
     {
         try
@@ -33,6 +44,11 @@ public sealed class OrganizationService(
         }
     }
 
+    /// <summary>
+    /// Get an organization from the ROR API
+    /// </summary>
+    /// <param name="id"> The ID of the organization </param>
+    /// <returns> The organization or <c>null</c> if it does not exist </returns>
     public async Task<Organization?> GetOrganization(string id)
     {
         try
@@ -52,5 +68,9 @@ public sealed class OrganizationService(
         }
     }
 
+    /// <summary>
+    /// Query organizations from the ROR API
+    /// </summary>
+    /// <returns> A query builder </returns>
     public OrganizationQueryBuilder Query() => new(this);
 }

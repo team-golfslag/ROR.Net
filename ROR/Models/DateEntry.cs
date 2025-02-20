@@ -8,15 +8,6 @@ namespace ROR.Net.Models;
 public class DateEntry
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="DateEntry"/> class.
-    /// </summary>
-    /// <param name="schemaVersion">The schema version of the date entry.</param>
-    public DateEntry(string schemaVersion)
-    {
-        SchemaVersion = schemaVersion;
-    }
-    
-    /// <summary>
     /// Gets or sets the date of the entry.
     /// </summary>
     [JsonPropertyName("date")]
