@@ -1,4 +1,3 @@
-using System.Text;
 using System.Web;
 using ROR.Net.Models;
 using ROR.Net.Services;
@@ -7,13 +6,13 @@ namespace ROR.Net;
 
 public class OrganizationQueryBuilder
 {
-    private const int _pageSize = 20;
+    private const int PageSize = 20;
+
     private readonly List<string> _organizationContinentCodeList = [];
     private readonly List<string> _organizationContinentNameList = [];
     private readonly List<string> _organizationCountryCodeList = [];
     private readonly List<string> _organizationCountryNameList = [];
     private readonly OrganizationService _service;
-
     private readonly List<OrganizationStatus> _statusList = [];
     private readonly List<OrganizationType> _typeList = [];
 
@@ -23,7 +22,7 @@ public class OrganizationQueryBuilder
     private DateTime? _modifiedDateFrom;
     private DateTime? _modifiedDateUntil;
 
-    private int _numberOfResults = 20;
+    private int? _numberOfResults;
     private string? _query;
 
     internal OrganizationQueryBuilder(OrganizationService service)
@@ -93,20 +92,29 @@ public class OrganizationQueryBuilder
 
     public OrganizationQueryBuilder WithQuery(string query)
     {
+        if (_query != null)
+            throw new InvalidOperationException("Query can only be set once");
         _query = query;
         return this;
     }
 
     public OrganizationQueryBuilder WithNumberOfResults(int numberOfResults)
     {
+        if (numberOfResults <= 0)
+            throw new ArgumentException("Number of results must be greater than 0");
+        if (_numberOfResults != null)
+            throw new InvalidOperationException("Number of results can only be set once");
         _numberOfResults = numberOfResults;
         return this;
     }
 
     public async Task<OrganizationsResult?> Execute()
     {
+        // Build the query
         List<string> query = BuildQuery();
-        List<OrganizationsResult> results = new();
+
+        // Perform the query
+        List<OrganizationsResult> results = [];
         foreach (string q in query)
         {
             OrganizationsResult? result = await _service.PerformQuery(q);
@@ -115,72 +123,94 @@ public class OrganizationQueryBuilder
 
         if (results.Count == 0) return null;
 
+        // Combine the results
         OrganizationsResult first = results[0];
         if (results.Count == 1) return first;
 
         return results.Skip(1).Aggregate(first, (current, other) => current.Combine(other));
     }
 
-    private List<string> BuildQuery()
+    public List<string> BuildQuery()
     {
-        if (_numberOfResults <= 0) throw new ArgumentException("Number of results must be greater than 0");
-        if (_numberOfResults <= _pageSize) return [BuildQuery(null)];
+        int results = _numberOfResults ?? PageSize;
+        if (results <= PageSize)
+            return [BuildQuery(null)];
 
-        int pages = _numberOfResults / _pageSize;
-        if (_numberOfResults % _pageSize > 0) pages++;
+        int pages = results / PageSize;
+        if (_numberOfResults % PageSize > 0) pages++;
 
         return Enumerable.Range(1, pages).Select(page => BuildQuery(page)).ToList();
     }
 
     private string BuildQuery(int? page)
     {
-        List<string> components = new();
-        if (page.HasValue) components.Add("page=" + page);
+        // Build the components of the query
+        List<string> components = [];
 
-        List<string> filters = new();
-        filters.Add(string.Join(",", _statusList.Select(s => "status:" + s.ToString().ToLower())));
-        filters.Add(string.Join(",", _typeList.Select(t => "types:" + t.ToString().ToLower())));
-        filters.Add(string.Join(
-                          ",",
-                          _organizationCountryCodeList.Select(
-                              cc => "country.country_code:" + HttpUtility.UrlEncode(cc))));
-        filters.Add(string.Join(
-                          ",",
-                          _organizationCountryNameList.Select(
-                              cn => "locations.geonames_details.country_name:" + HttpUtility.UrlEncode(cn))));
-        filters.Add(string.Join(
-                          ",",
-                          _organizationContinentCodeList.Select(
-                              cc => "locations.geonames_details.continent_code:" + HttpUtility.UrlEncode(cc))));
-        filters.Add(string.Join(
-                          ",",
-                          _organizationContinentNameList.Select(
-                              cn => "locations.geonames_details.continent_name:" + HttpUtility.UrlEncode(cn))));
+        // Set the page
+        if (page.HasValue)
+            components.Add("page=" + page);
 
+        // Build the filters
+        List<string> filters =
+        [
+            string.Join(",", _statusList.Select(s => "status:" + s.ToString().ToLower())),
+            string.Join(",", _typeList.Select(t => "types:" + t.ToString().ToLower())),
+            string.Join(
+                ",",
+                _organizationCountryCodeList.Select(
+                    cc => "country.country_code:" + HttpUtility.UrlEncode(cc))),
+            string.Join(
+                ",",
+                _organizationCountryNameList.Select(
+                    cn => "locations.geonames_details.country_name:" + HttpUtility.UrlEncode(cn))),
+            string.Join(
+                ",",
+                _organizationContinentCodeList.Select(
+                    cc => "locations.geonames_details.continent_code:" + HttpUtility.UrlEncode(cc))),
+            string.Join(
+                ",",
+                _organizationContinentNameList.Select(
+                    cn => "locations.geonames_details.continent_name:" + HttpUtility.UrlEncode(cn))),
+        ];
+
+        // Add the filters to the components
         if (filters.Count > 0)
-            components.Add("filter=" + HttpUtility.UrlEncode(string.Join(",", filters.Where(f => f.Length > 0))));
+            // Remove empty filters
+            components.Add("filter=" + string.Join(",", filters.Where(f => f.Length > 0)));
 
-        if (_query != null) components.Add("query=" + HttpUtility.UrlEncode(_query));
-
-        StringBuilder advancedQuery = new();
+        // Create the advanced query
+        List<string> advancedQuery = [];
         if (_createdDateFrom.HasValue || _createdDateUntil.HasValue)
-            components.Add("admin.created.date" +
-                           HttpUtility.UrlEncode(GetFormattedDateRange(_createdDateFrom, _createdDateUntil)));
+            advancedQuery.Add("admin.created.date:" +
+                              GetFormattedDateRange(_createdDateFrom, _createdDateUntil));
 
         if (_modifiedDateFrom.HasValue || _modifiedDateUntil.HasValue)
-            components.Add("admin.last_modified.date" +
-                           HttpUtility.UrlEncode(GetFormattedDateRange(_modifiedDateFrom, _modifiedDateUntil)));
+            advancedQuery.Add("admin.last_modified.date:" +
+                              GetFormattedDateRange(_modifiedDateFrom, _modifiedDateUntil));
 
-        if (advancedQuery.Length > 0)
-            components.Add("advanced_query=" + HttpUtility.UrlEncode(advancedQuery.ToString()));
+        // If there is a query and advanced query, combine them
+        if (_query != null && advancedQuery.Count > 0)
+            advancedQuery.Add(HttpUtility.UrlEncode(_query));
+        else
+            // Otherwise, add only the query
+            components.Add("query=" + HttpUtility.UrlEncode(_query));
 
+        // If there is an advanced query, add it
+        if (advancedQuery.Count > 0)
+            components.Add("query.advanced=" + string.Join("%20AND%20", advancedQuery));
+
+        // Return the query
         return string.Join("&", components);
     }
 
     private static string GetFormattedDateRange(DateTime? from, DateTime? until)
     {
-        string fromString = from.HasValue ? from.Value.ToString("yyyy-MM-dd") : "*";
-        string untilString = until.HasValue ? until.Value.ToString("yyyy-MM-dd") : "*";
-        return $"{{{fromString} TO% {untilString}}}";
+        from ??= DateTime.MinValue;
+        until ??= DateTime.MaxValue;
+
+        string fromString = from.Value.ToString("yyyy-MM-dd");
+        string untilString = until.Value.ToString("yyyy-MM-dd");
+        return $"%5B{fromString}%20TO%20{untilString}%5D";
     }
 }

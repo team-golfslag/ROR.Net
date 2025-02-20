@@ -26,5 +26,5 @@ public class DateEntry
     /// Gets or sets the schema version of the date entry.
     /// </summary>
     [JsonPropertyName("schema_version")]
-    public string SchemaVersion { get; set; }
+    public required string SchemaVersion { get; set; }
 }
