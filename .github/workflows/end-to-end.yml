@@ -8,6 +8,7 @@ on:
       - "**.csproj"
       - "**.sln"
       - "**.json"
+      - "**.yml"
 
 concurrency:
   group: end-to-end-${{ github.head_ref }}
