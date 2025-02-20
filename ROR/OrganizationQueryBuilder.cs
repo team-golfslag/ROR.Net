@@ -243,9 +243,9 @@ public class OrganizationQueryBuilder
 
         // Combine the results
         OrganizationsResult first = results[0];
-        return results.Count == 1
-            ? first
-            : results.Skip(1).Aggregate(first, (current, other) => current.Combine(other));
+        if (results.Count == 1) return first;
+
+        return results.Skip(1).Aggregate(first, (current, other) => current.Combine(other));
     }
 
     /// <summary>
