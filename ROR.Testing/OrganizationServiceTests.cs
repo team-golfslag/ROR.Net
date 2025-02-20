@@ -26,7 +26,7 @@ public class OrganizationServiceTests
     [Fact]
     public async Task GetOrganization_ShouldReturnOrganization_WhenResponseIsValid()
     {
-        var organization = new Organization
+        Organization organization = new Organization
         {
             Id = "123",
             Admin = new OrganizationAdmin
@@ -80,6 +80,28 @@ public class OrganizationServiceTests
         Assert.NotNull(result);
         Assert.Equal("123", result.Id);
         Assert.Equal("Test Organization", result.Names[0].Value);
+    }
+
+    [Fact]
+    public async Task GetOrganization_ShouldLogError_WhenRequestExceptionIsThrown()
+    {
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>())
+            .ThrowsAsync(new HttpRequestException("Failed to get organization from ROR"));
+
+        Organization? result = await _organizationService.GetOrganization("123");
+        Assert.Null(result);
+        _loggerMock.Verify(
+            x => x.Log(
+                LogLevel.Error,
+                It.IsAny<EventId>(),
+                It.Is<It.IsAnyType>((v, t) => v.ToString()!.Contains("Failed to get organization from ROR")),
+                It.IsAny<Exception>(),
+                It.IsAny<Func<It.IsAnyType, Exception, string>>()!),
+            Times.Once);
     }
 
     [Fact]

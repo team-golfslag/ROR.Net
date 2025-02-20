@@ -13,16 +13,15 @@ namespace ROR.Testing;
 public class OrganizationQueryBuilderTests
 {
     private readonly Mock<HttpMessageHandler> _httpMessageHandlerMock;
-    private readonly HttpClient _httpClient;
     private readonly Mock<ILogger<OrganizationService>> _loggerMock;
     private readonly OrganizationService _organizationService;
 
     public OrganizationQueryBuilderTests()
     {
         _httpMessageHandlerMock = new Mock<HttpMessageHandler>();
-        _httpClient = new HttpClient(_httpMessageHandlerMock.Object);
+        HttpClient httpClient = new(_httpMessageHandlerMock.Object);
         _loggerMock = new Mock<ILogger<OrganizationService>>();
-        _organizationService = new OrganizationService(_httpClient, _loggerMock.Object);
+        _organizationService = new OrganizationService(httpClient, _loggerMock.Object);
     }
 
     [Fact]
@@ -129,13 +128,60 @@ public class OrganizationQueryBuilderTests
     }
 
     [Fact]
+    public async Task Execute_ShouldLogError_WhenRequestExceptionIsThrown()
+    {
+        _httpMessageHandlerMock.Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>())
+            .ThrowsAsync(new HttpRequestException("Failed to get organizations from ROR"));
+
+        OrganizationQueryBuilder queryBuilder = _organizationService
+            .Query()
+            .WithQuery("Test")
+            .WithNumberOfResults(1);
+
+        OrganizationsResult? result = await queryBuilder.Execute();
+
+        Assert.Null(result);
+        _loggerMock.Verify(
+            x => x.Log(
+                LogLevel.Error,
+                It.IsAny<EventId>(),
+                It.Is<It.IsAnyType>((v, t) => v.ToString()!.Contains("Failed to get organizations from ROR")),
+                It.IsAny<Exception>(),
+                It.IsAny<Func<It.IsAnyType, Exception, string>>()!),
+            Times.Once);
+    }
+
+    [Fact]
     public void BuildQuery_ShouldThrowArgumentException_WhenNumberOfResultsIsZero()
+    {
+        OrganizationQueryBuilder queryBuilder = _organizationService.Query();
+
+        Assert.Throws<ArgumentException>(() => queryBuilder.WithNumberOfResults(0));
+    }
+
+
+    [Fact]
+    public void BuildQuery_ShouldThrowArgumentException_WhenNumberOfResultsIsSetMultipleTimes()
     {
         OrganizationQueryBuilder queryBuilder = _organizationService
             .Query()
-            .WithNumberOfResults(0);
+            .WithNumberOfResults(1);
 
-        Assert.Throws<ArgumentException>(() => queryBuilder.BuildQuery());
+        Assert.Throws<InvalidOperationException>(() => queryBuilder.WithNumberOfResults(2));
+    }
+
+    [Fact]
+    public void BuildQuery_ShouldThrowArgumentException_WhenQueryIsSetMultipleTimes()
+    {
+        OrganizationQueryBuilder queryBuilder = _organizationService
+            .Query()
+            .WithQuery("Test");
+
+        Assert.Throws<InvalidOperationException>(() => queryBuilder.WithQuery("Test2"));
     }
 
     [Fact]

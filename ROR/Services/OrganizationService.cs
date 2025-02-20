@@ -8,15 +8,10 @@ namespace ROR.Net.Services;
 
 public sealed class OrganizationService(
     HttpClient httpClient,
-    ILogger<OrganizationService> logger) : IDisposable
+    ILogger<OrganizationService> logger,
+    OrganizationServiceOptions? options = null) : IDisposable
 {
-    private const string BaseUrl = "https://api.ror.org/v2/organizations";
-
-    private readonly JsonSerializerOptions _jsonSerializerOptions = new()
-    {
-        PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
-        Converters = { new JsonStringEnumConverter(JsonNamingPolicy.SnakeCaseLower) },
-    };
+    private readonly OrganizationServiceOptions _options = options ?? new OrganizationServiceOptions();
 
     public void Dispose() => httpClient?.Dispose();
 
@@ -24,12 +19,15 @@ public sealed class OrganizationService(
     {
         try
         {
-            return await httpClient.GetFromJsonAsync<OrganizationsResult>($"{BaseUrl}?{query}", _jsonSerializerOptions);
-        } catch (HttpRequestException e)
+            return await httpClient.GetFromJsonAsync<OrganizationsResult>(
+                $"{_options.BaseUrl}?{query}", _options.JsonSerializerOptions);
+        }
+        catch (HttpRequestException e)
         {
             logger.LogError(e, "Failed to get organizations from ROR");
             return null;
-        } catch (JsonException e)
+        }
+        catch (JsonException e)
         {
             logger.LogError(e, "Failed to deserialize organizations from ROR");
             return null;
@@ -40,12 +38,15 @@ public sealed class OrganizationService(
     {
         try
         {
-            return await httpClient.GetFromJsonAsync<Organization>($"{BaseUrl}/{id}", _jsonSerializerOptions);
-        } catch (HttpRequestException e)
+            return await httpClient.GetFromJsonAsync<Organization>($"{_options.BaseUrl}/{id}",
+                                                                   _options.JsonSerializerOptions);
+        }
+        catch (HttpRequestException e)
         {
             logger.LogError(e, "Failed to get organization from ROR");
             return null;
-        } catch (JsonException e)
+        }
+        catch (JsonException e)
         {
             logger.LogError(e, "Failed to deserialize organization from ROR");
             return null;
