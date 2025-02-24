@@ -3,6 +3,11 @@ name: Create Pull Request from dev to main
 on:
     workflow_dispatch:
 
+permissions:
+    actions: write
+    contents: read
+    pull-requests: write
+
 jobs:
     merge:
         runs-on: ubuntu-latest
