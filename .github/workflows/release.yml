@@ -61,7 +61,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
             name: build
-            path: ROR.Net\ROR\bin
+            path: ROR.Net\ROR.Net\ROR\bin
       - name: Test the project
         shell: powershell
         run: |
