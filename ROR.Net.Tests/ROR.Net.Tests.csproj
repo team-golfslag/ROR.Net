@@ -5,7 +5,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <IsPackable>false</IsPackable>
-        <RootNamespace>ROR.Testing</RootNamespace>
+        <RootNamespace>ROR.Tests</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
@@ -21,7 +21,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\ROR.Net\ROR.Net.csproj" />
+        <ProjectReference Include="..\ROR.Net\ROR.Net.csproj"/>
     </ItemGroup>
 
 </Project>

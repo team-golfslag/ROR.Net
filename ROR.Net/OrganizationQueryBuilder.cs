@@ -10,11 +10,6 @@ namespace ROR.Net;
 public class OrganizationQueryBuilder
 {
     /// <summary>
-    /// The service to use to perform the query.
-    /// </summary>
-    private readonly OrganizationService _service;
-
-    /// <summary>
     /// The number of results per page.
     /// </summary>
     private const int PageSize = 20;
@@ -38,6 +33,11 @@ public class OrganizationQueryBuilder
     /// The list of country names to filter by.
     /// </summary>
     private readonly List<string> _organizationCountryNameList = [];
+
+    /// <summary>
+    /// The service to use to perform the query.
+    /// </summary>
+    private readonly OrganizationService _service;
 
     /// <summary>
     /// The list of organization statuses to filter by.
@@ -79,7 +79,10 @@ public class OrganizationQueryBuilder
     /// </summary>
     private string? _query;
 
-    internal OrganizationQueryBuilder(OrganizationService service) => _service = service;
+    internal OrganizationQueryBuilder(OrganizationService service)
+    {
+        _service = service;
+    }
 
     /// <summary>
     /// Filter by organization status.
@@ -151,7 +154,7 @@ public class OrganizationQueryBuilder
     /// Filter by created date.
     /// </summary>
     /// <param name="createdDateFrom">The start of the range of created dates to filter by.</param>
-    /// <remarks> When called without <see cref="CreatedDateUntil(DateTime)"/>, it will filter until the end of time. </remarks>
+    /// <remarks> When called without <see cref="CreatedDateUntil(DateTime)" />, it will filter until the end of time. </remarks>
     public OrganizationQueryBuilder CreatedDateFrom(DateTime createdDateFrom)
     {
         _createdDateFrom = createdDateFrom;
@@ -162,7 +165,7 @@ public class OrganizationQueryBuilder
     /// Filter by created date.
     /// </summary>
     /// <param name="createdDateUntil">The end of the range of created dates to filter by.</param>
-    /// <remarks> When called without <see cref="CreatedDateFrom(DateTime)"/>, it will filter from the beginning of time. </remarks>
+    /// <remarks> When called without <see cref="CreatedDateFrom(DateTime)" />, it will filter from the beginning of time. </remarks>
     public OrganizationQueryBuilder CreatedDateUntil(DateTime createdDateUntil)
     {
         _createdDateUntil = createdDateUntil;
@@ -173,7 +176,7 @@ public class OrganizationQueryBuilder
     /// Filter by modified date.
     /// </summary>
     /// <param name="modifiedDateFrom">The start of the range of modified dates to filter by.</param>
-    /// <remarks> When called without <see cref="ModifiedDateUntil(DateTime)"/>, it will filter until the end of time. </remarks>
+    /// <remarks> When called without <see cref="ModifiedDateUntil(DateTime)" />, it will filter until the end of time. </remarks>
     public OrganizationQueryBuilder ModifiedDateFrom(DateTime modifiedDateFrom)
     {
         _modifiedDateFrom = modifiedDateFrom;
@@ -184,7 +187,7 @@ public class OrganizationQueryBuilder
     /// Filter by modified date.
     /// </summary>
     /// <param name="modifiedDateUntil">The end of the range of modified dates to filter by.</param>
-    /// <remarks> When called without <see cref="ModifiedDateFrom(DateTime)"/>, it will filter from the beginning of time. </remarks>
+    /// <remarks> When called without <see cref="ModifiedDateFrom(DateTime)" />, it will filter from the beginning of time. </remarks>
     public OrganizationQueryBuilder ModifiedDateUntil(DateTime modifiedDateUntil)
     {
         _modifiedDateUntil = modifiedDateUntil;
@@ -269,7 +272,6 @@ public class OrganizationQueryBuilder
     /// <summary>
     /// Build the query for a specific page.
     /// </summary>
-    ///
     /// <param name="page">The page to build the query for.</param>
     /// <returns> The query </returns>
     private string BuildQuery(int? page)
@@ -313,11 +315,11 @@ public class OrganizationQueryBuilder
         List<string> advancedQuery = [];
         if (_createdDateFrom.HasValue || _createdDateUntil.HasValue)
             advancedQuery.Add("admin.created.date:" +
-                              GetFormattedDateRange(_createdDateFrom, _createdDateUntil));
+                GetFormattedDateRange(_createdDateFrom, _createdDateUntil));
 
         if (_modifiedDateFrom.HasValue || _modifiedDateUntil.HasValue)
             advancedQuery.Add("admin.last_modified.date:" +
-                              GetFormattedDateRange(_modifiedDateFrom, _modifiedDateUntil));
+                GetFormattedDateRange(_modifiedDateFrom, _modifiedDateUntil));
 
         // If there is a query and advanced query, combine them
         if (_query != null && advancedQuery.Count > 0)
@@ -340,8 +342,8 @@ public class OrganizationQueryBuilder
     /// <param name="from">The start of the range.</param>
     /// <param name="until">The end of the range.</param>
     /// <returns> The formatted date range. </returns>
-    /// <remarks> If <paramref name="from"/> is <c>null</c>, it will default to <see cref="DateTime.MinValue"/>. </remarks>
-    /// <remarks> If <paramref name="until"/> is <c>null</c>, it will default to <see cref="DateTime.MaxValue"/>. </remarks>
+    /// <remarks> If <paramref name="from" /> is <c>null</c>, it will default to <see cref="DateTime.MinValue" />. </remarks>
+    /// <remarks> If <paramref name="until" /> is <c>null</c>, it will default to <see cref="DateTime.MaxValue" />. </remarks>
     private static string GetFormattedDateRange(DateTime? from, DateTime? until)
     {
         from ??= DateTime.MinValue;

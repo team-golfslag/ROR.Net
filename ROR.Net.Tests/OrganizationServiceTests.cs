@@ -6,7 +6,7 @@ using Moq.Protected;
 using ROR.Net.Models;
 using ROR.Net.Services;
 
-namespace ROR.Testing;
+namespace ROR.Tests;
 
 public class OrganizationServiceTests
 {
@@ -16,10 +16,10 @@ public class OrganizationServiceTests
 
     public OrganizationServiceTests()
     {
-        _httpMessageHandlerMock = new Mock<HttpMessageHandler>();
+        _httpMessageHandlerMock = new();
         HttpClient httpClient = new(_httpMessageHandlerMock.Object);
-        _loggerMock = new Mock<ILogger<OrganizationService>>();
-        _organizationService = new OrganizationService(httpClient, _loggerMock.Object);
+        _loggerMock = new();
+        _organizationService = new(httpClient, _loggerMock.Object);
     }
 
     [Fact]
@@ -28,14 +28,14 @@ public class OrganizationServiceTests
         Organization organization = new()
         {
             Id = "123",
-            Admin = new OrganizationAdmin
+            Admin = new()
             {
-                Created = new DateEntry
+                Created = new()
                 {
                     Date = "2021-01-01",
                     SchemaVersion = "v1.1",
                 },
-                DateEntry = new DateEntry
+                DateEntry = new()
                 {
                     Date = "2021-01-01",
                     SchemaVersion = "v1.1",
@@ -46,7 +46,7 @@ public class OrganizationServiceTests
                 new OrganizationLocation
                 {
                     GeonamesId = 1283416,
-                    GeonamesDetails = new GeonamesDetails
+                    GeonamesDetails = new()
                     {
                         CountryCode = "NP",
                         CountryName = "Nepal",

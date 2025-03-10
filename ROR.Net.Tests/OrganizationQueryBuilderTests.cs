@@ -7,7 +7,7 @@ using ROR.Net;
 using ROR.Net.Models;
 using ROR.Net.Services;
 
-namespace ROR.Testing;
+namespace ROR.Tests;
 
 public class OrganizationQueryBuilderTests
 {
@@ -17,10 +17,10 @@ public class OrganizationQueryBuilderTests
 
     public OrganizationQueryBuilderTests()
     {
-        _httpMessageHandlerMock = new Mock<HttpMessageHandler>();
+        _httpMessageHandlerMock = new();
         HttpClient httpClient = new(_httpMessageHandlerMock.Object);
-        _loggerMock = new Mock<ILogger<OrganizationService>>();
-        _organizationService = new OrganizationService(httpClient, _loggerMock.Object);
+        _loggerMock = new();
+        _organizationService = new(httpClient, _loggerMock.Object);
     }
 
     [Fact]
@@ -29,14 +29,14 @@ public class OrganizationQueryBuilderTests
         Organization organization = new()
         {
             Id = "123",
-            Admin = new OrganizationAdmin
+            Admin = new()
             {
-                Created = new DateEntry
+                Created = new()
                 {
                     Date = "2021-01-01",
                     SchemaVersion = "v1.1",
                 },
-                DateEntry = new DateEntry
+                DateEntry = new()
                 {
                     Date = "2021-01-01",
                     SchemaVersion = "v1.1",
@@ -47,7 +47,7 @@ public class OrganizationQueryBuilderTests
                 new OrganizationLocation
                 {
                     GeonamesId = 1283416,
-                    GeonamesDetails = new GeonamesDetails
+                    GeonamesDetails = new()
                     {
                         CountryCode = "NP",
                         CountryName = "Nepal",
@@ -69,10 +69,42 @@ public class OrganizationQueryBuilderTests
 
         ResultMetadata metadata = new()
         {
-            Continents = [new MetadataContinentCount { Count = 5, Id = "EU", Title = "Europe" }],
-            Countries = [new MetadataCountryCount { Count = 10, Id = "NL", Title = "Netherlands" }],
-            Statuses = [new MetadataStatusCount { Count = 20, Id = "active", Title = "Active" }],
-            Types = [new MetadataTypeCount { Count = 12, Id = "education", Title = "Education" }],
+            Continents =
+            [
+                new MetadataContinentCount
+                {
+                    Count = 5,
+                    Id = "EU",
+                    Title = "Europe",
+                },
+            ],
+            Countries =
+            [
+                new MetadataCountryCount
+                {
+                    Count = 10,
+                    Id = "NL",
+                    Title = "Netherlands",
+                },
+            ],
+            Statuses =
+            [
+                new MetadataStatusCount
+                {
+                    Count = 20,
+                    Id = "active",
+                    Title = "Active",
+                },
+            ],
+            Types =
+            [
+                new MetadataTypeCount
+                {
+                    Count = 12,
+                    Id = "education",
+                    Title = "Education",
+                },
+            ],
         };
 
         OrganizationsResult organizationResult = new()
@@ -198,10 +230,10 @@ public class OrganizationQueryBuilderTests
             .WithCountryName("United States")
             .WithContinentCode("NA")
             .WithContinentName("North America")
-            .CreatedDateFrom(new DateTime(2020, 1, 1, 0, 0, 0, DateTimeKind.Utc))
-            .CreatedDateUntil(new DateTime(2021, 1, 1, 0, 0, 0, DateTimeKind.Utc))
-            .ModifiedDateFrom(new DateTime(2021, 1, 1, 0, 0, 0, DateTimeKind.Utc))
-            .ModifiedDateUntil(new DateTime(2022, 1, 1, 0, 0, 0, DateTimeKind.Utc))
+            .CreatedDateFrom(new(2020, 1, 1, 0, 0, 0, DateTimeKind.Utc))
+            .CreatedDateUntil(new(2021, 1, 1, 0, 0, 0, DateTimeKind.Utc))
+            .ModifiedDateFrom(new(2021, 1, 1, 0, 0, 0, DateTimeKind.Utc))
+            .ModifiedDateUntil(new(2022, 1, 1, 0, 0, 0, DateTimeKind.Utc))
             .WithNumberOfResults(20);
 
         string query = queryBuilder.BuildQueries()[0];

@@ -8,7 +8,7 @@ namespace ROR.Net.Models;
 public class GeonamesDetails
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="GeonamesDetails"/> class.
+    /// Initializes a new instance of the <see cref="GeonamesDetails" /> class.
     /// </summary>
     [JsonPropertyName("country_code")]
     public string? CountryCode { get; set; }
