@@ -50,7 +50,7 @@ public sealed class OrganizationService(
         try
         {
             return await httpClient.GetFromJsonAsync<Organization>($"{_options.BaseUrl}/{id}",
-                                                                   _options.JsonSerializerOptions);
+                _options.JsonSerializerOptions);
         }
         catch (HttpRequestException e)
         {
