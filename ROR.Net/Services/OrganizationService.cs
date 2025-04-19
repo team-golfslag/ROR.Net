@@ -6,72 +6,73 @@
 using System.Net.Http.Json;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using ROR.Net.Models;
 
 namespace ROR.Net.Services;
 
 /// <summary>
-/// Service to interact with the ROR API
+/// Service to interact with the ROR API.
 /// </summary>
-public sealed class OrganizationService(
-    HttpClient httpClient,
-    ILogger<OrganizationService> logger,
-    OrganizationServiceOptions? options = null) : IDisposable
+public class OrganizationService : IOrganizationService
 {
-    private readonly OrganizationServiceOptions _options = options ?? new OrganizationServiceOptions();
+    private readonly HttpClient _httpClient;
+    private readonly ILogger<OrganizationService> _logger;
+    private readonly OrganizationServiceOptions _options;
 
-    public void Dispose() => httpClient?.Dispose();
+    public OrganizationService(
+        HttpClient httpClient,
+        IOptions<OrganizationServiceOptions> options,
+        ILogger<OrganizationService> logger)
+    {
+        _httpClient = httpClient;
+        _logger = logger;
+        _options = options.Value;
 
-    /// <summary>
-    /// Perform a query to the ROR API
-    /// </summary>
-    /// <returns> The result of the query </returns>
-    internal async Task<OrganizationsResult?> PerformQuery(string query)
+        // configure the base address once
+        _httpClient.BaseAddress = new(_options.BaseUrl);
+    }
+
+    /// <inheritdoc/>
+    public async Task<OrganizationsResult?> PerformQueryAsync(string query)
     {
         try
         {
-            return await httpClient.GetFromJsonAsync<OrganizationsResult>(
-                $"{_options.BaseUrl}?{query}", _options.JsonSerializerOptions);
+            return await _httpClient.GetFromJsonAsync<OrganizationsResult>(
+                $"?{query}", _options.JsonSerializerOptions);
         }
         catch (HttpRequestException e)
         {
-            logger.LogError(e, "Failed to get organizations from ROR");
+            _logger.LogError(e, "Failed to get organizations from ROR (query={Query})", query);
             return null;
         }
         catch (JsonException e)
         {
-            logger.LogError(e, "Failed to deserialize organizations from ROR");
+            _logger.LogError(e, "Failed to deserialize organizations from ROR (query={Query})", query);
             return null;
         }
     }
 
-    /// <summary>
-    /// Get an organization from the ROR API
-    /// </summary>
-    /// <param name="id"> The ID of the organization </param>
-    /// <returns> The organization or <c>null</c> if it does not exist </returns>
-    public async Task<Organization?> GetOrganization(string id)
+    /// <inheritdoc/>
+    public async Task<Organization?> GetOrganizationAsync(string id)
     {
         try
         {
-            return await httpClient.GetFromJsonAsync<Organization>($"{_options.BaseUrl}/{id}",
-                _options.JsonSerializerOptions);
+            return await _httpClient.GetFromJsonAsync<Organization>(
+                $"/{id}", _options.JsonSerializerOptions);
         }
         catch (HttpRequestException e)
         {
-            logger.LogError(e, "Failed to get organization from ROR");
+            _logger.LogError(e, "Failed to get organization from ROR (id={Id})", id);
             return null;
         }
         catch (JsonException e)
         {
-            logger.LogError(e, "Failed to deserialize organization from ROR");
+            _logger.LogError(e, "Failed to deserialize organization from ROR (id={Id})", id);
             return null;
         }
     }
 
-    /// <summary>
-    /// Query organizations from the ROR API
-    /// </summary>
-    /// <returns> A query builder </returns>
+    /// <inheritdoc/>
     public OrganizationQueryBuilder Query() => new(this);
 }

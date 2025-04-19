@@ -243,7 +243,7 @@ public class OrganizationQueryBuilder
         List<OrganizationsResult> results = [];
         foreach (string q in query)
         {
-            OrganizationsResult? result = await _service.PerformQuery(q);
+            OrganizationsResult? result = await _service.PerformQueryAsync(q);
             if (result is not null) results.Add(result);
         }
 
