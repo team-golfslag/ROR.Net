@@ -7,6 +7,7 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using ROR.Net.Exceptions;
 using ROR.Net.Models;
 
 namespace ROR.Net.Services;
@@ -44,12 +45,14 @@ public class OrganizationService : IOrganizationService
         catch (HttpRequestException e)
         {
             _logger.LogError(e, "Failed to get organizations from ROR (query={Query})", query);
-            return null;
+            throw new RORServiceException(
+                "Failed to get organizations from ROR", e);
         }
         catch (JsonException e)
         {
             _logger.LogError(e, "Failed to deserialize organizations from ROR (query={Query})", query);
-            return null;
+            throw new RORServiceException(
+                "Failed to deserialize organizations from ROR", e);
         }
     }
 
@@ -64,12 +67,14 @@ public class OrganizationService : IOrganizationService
         catch (HttpRequestException e)
         {
             _logger.LogError(e, "Failed to get organization from ROR (id={Id})", id);
-            return null;
+            throw new RORServiceException(
+                "Failed to get organization from ROR", e);
         }
         catch (JsonException e)
         {
             _logger.LogError(e, "Failed to deserialize organization from ROR (id={Id})", id);
-            return null;
+            throw new RORServiceException(
+                "Failed to deserialize organization from ROR", e);
         }
     }
 

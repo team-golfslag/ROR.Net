@@ -11,6 +11,7 @@ using Microsoft.Extensions.Options;
 using Moq;
 using Moq.Protected;
 using ROR.Net;
+using ROR.Net.Exceptions;
 using ROR.Net.Models;
 using ROR.Net.Services;
 
@@ -185,10 +186,8 @@ public class OrganizationQueryBuilderTests
             .WithQuery("Test")
             .WithNumberOfResults(1);
 
-        OrganizationsResult? result = await queryBuilder.Execute();
-
-        // Assert
-        Assert.Null(result);
+        // Act & Assert
+        await Assert.ThrowsAsync<RORServiceException>(() => queryBuilder.Execute());
     }
 
     [Fact]
@@ -206,9 +205,9 @@ public class OrganizationQueryBuilderTests
             .WithQuery("Test")
             .WithNumberOfResults(1);
 
-        OrganizationsResult? result = await queryBuilder.Execute();
 
-        Assert.Null(result);
+        // Act & Assert
+        await Assert.ThrowsAsync<RORServiceException>(() => queryBuilder.Execute());
         _loggerMock.Verify(
             x => x.Log(
                 LogLevel.Error,

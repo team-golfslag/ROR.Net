@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using Moq.Protected;
+using ROR.Net.Exceptions;
 using ROR.Net.Models;
 using ROR.Net.Services;
 
@@ -123,8 +124,8 @@ public class OrganizationServiceTests
                 ItExpr.IsAny<CancellationToken>())
             .ThrowsAsync(new HttpRequestException("Failed to get organization from ROR"));
 
-        Organization? result = await _organizationService.GetOrganizationAsync("123");
-        Assert.Null(result);
+        // Act & Assert
+        await Assert.ThrowsAsync<RORServiceException>(() => _organizationService.GetOrganizationAsync("123"));
         _loggerMock.Verify(
             x => x.Log(
                 LogLevel.Error,
@@ -149,8 +150,8 @@ public class OrganizationServiceTests
                 Content = new StringContent("Invalid JSON"),
             });
 
-        Organization? result = await _organizationService.GetOrganizationAsync("123");
-        Assert.Null(result);
+        // Act & Assert
+        await Assert.ThrowsAsync<RORServiceException>(() => _organizationService.GetOrganizationAsync("123"));
         _loggerMock.Verify(
             x => x.Log(
                 LogLevel.Error,
