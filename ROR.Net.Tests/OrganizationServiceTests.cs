@@ -6,8 +6,10 @@
 using System.Net;
 using System.Net.Http.Json;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Moq;
 using Moq.Protected;
+using ROR.Net.Exceptions;
 using ROR.Net.Models;
 using ROR.Net.Services;
 
@@ -18,13 +20,35 @@ public class OrganizationServiceTests
     private readonly Mock<HttpMessageHandler> _httpMessageHandlerMock;
     private readonly Mock<ILogger<OrganizationService>> _loggerMock;
     private readonly OrganizationService _organizationService;
-
+    
     public OrganizationServiceTests()
     {
         _httpMessageHandlerMock = new();
-        HttpClient httpClient = new(_httpMessageHandlerMock.Object);
+
+        HttpClient httpClient = new(_httpMessageHandlerMock.Object)
+        {
+            BaseAddress = new("https://api.ror.org")
+        };
+
+        Mock<IOptions<OrganizationServiceOptions>> optionsMock = new();
+        optionsMock
+            .Setup(o => o.Value)
+            .Returns(new OrganizationServiceOptions
+            {
+                BaseUrl = "https://api.ror.org",
+                JsonSerializerOptions = new()
+                {
+                    PropertyNameCaseInsensitive = true
+                }
+            });
+
         _loggerMock = new();
-        _organizationService = new(httpClient, _loggerMock.Object);
+
+        _organizationService = new(
+            httpClient,
+            optionsMock.Object,
+            _loggerMock.Object
+        );
     }
 
     [Fact]
@@ -82,7 +106,7 @@ public class OrganizationServiceTests
             });
 
         // Act
-        Organization? result = await _organizationService.GetOrganization("123");
+        Organization? result = await _organizationService.GetOrganizationAsync("123");
 
         // Assert
         Assert.NotNull(result);
@@ -100,8 +124,8 @@ public class OrganizationServiceTests
                 ItExpr.IsAny<CancellationToken>())
             .ThrowsAsync(new HttpRequestException("Failed to get organization from ROR"));
 
-        Organization? result = await _organizationService.GetOrganization("123");
-        Assert.Null(result);
+        // Act & Assert
+        await Assert.ThrowsAsync<RORServiceException>(() => _organizationService.GetOrganizationAsync("123"));
         _loggerMock.Verify(
             x => x.Log(
                 LogLevel.Error,
@@ -126,8 +150,8 @@ public class OrganizationServiceTests
                 Content = new StringContent("Invalid JSON"),
             });
 
-        Organization? result = await _organizationService.GetOrganization("123");
-        Assert.Null(result);
+        // Act & Assert
+        await Assert.ThrowsAsync<RORServiceException>(() => _organizationService.GetOrganizationAsync("123"));
         _loggerMock.Verify(
             x => x.Log(
                 LogLevel.Error,
