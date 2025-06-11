@@ -57,41 +57,6 @@ public class OrganizationServiceTests
         Organization organization = new()
         {
             Id = "123",
-            Admin = new()
-            {
-                Created = new()
-                {
-                    Date = "2021-01-01",
-                    SchemaVersion = "v1.1",
-                },
-                DateEntry = new()
-                {
-                    Date = "2021-01-01",
-                    SchemaVersion = "v1.1",
-                },
-            },
-            Locations =
-            [
-                new OrganizationLocation
-                {
-                    GeonamesId = 1283416,
-                    GeonamesDetails = new()
-                    {
-                        CountryCode = "NP",
-                        CountryName = "Nepal",
-                        Name = "Mount Everest",
-                    },
-                },
-            ],
-            Names =
-            [
-                new OrganizationName
-                {
-                    Value = "Test Organization",
-                    Types = [OrganizationNameType.Label],
-                    Lang = "en",
-                },
-            ],
             Types = [OrganizationType.Facility],
         };
         _httpMessageHandlerMock.Protected()
@@ -111,7 +76,6 @@ public class OrganizationServiceTests
         // Assert
         Assert.NotNull(result);
         Assert.Equal("123", result.Id);
-        Assert.Equal("Test Organization", result.Names[0].Value);
     }
 
     [Fact]

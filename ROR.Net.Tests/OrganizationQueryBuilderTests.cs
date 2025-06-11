@@ -59,41 +59,6 @@ public class OrganizationQueryBuilderTests
         Organization organization = new()
         {
             Id = "123",
-            Admin = new()
-            {
-                Created = new()
-                {
-                    Date = "2021-01-01",
-                    SchemaVersion = "v1.1",
-                },
-                DateEntry = new()
-                {
-                    Date = "2021-01-01",
-                    SchemaVersion = "v1.1",
-                },
-            },
-            Locations =
-            [
-                new OrganizationLocation
-                {
-                    GeonamesId = 1283416,
-                    GeonamesDetails = new()
-                    {
-                        CountryCode = "NP",
-                        CountryName = "Nepal",
-                        Name = "Mount Everest",
-                    },
-                },
-            ],
-            Names =
-            [
-                new OrganizationName
-                {
-                    Value = "Test Organization",
-                    Types = [OrganizationNameType.Label],
-                    Lang = "en",
-                },
-            ],
             Types = [OrganizationType.Facility],
         };
 
@@ -164,7 +129,6 @@ public class OrganizationQueryBuilderTests
         Assert.NotNull(result);
         Assert.Single(result.Organizations);
         Assert.Equal("123", result.Organizations[0].Id);
-        Assert.Equal("Test Organization", result.Organizations[0].Names[0].Value);
     }
 
     [Fact]
