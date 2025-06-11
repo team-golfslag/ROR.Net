@@ -62,7 +62,7 @@ public class OrganizationService : IOrganizationService
         try
         {
             return await _httpClient.GetFromJsonAsync<Organization>(
-                $"/{id}", _options.JsonSerializerOptions);
+                $"{_options.BaseUrl}/{id}", _options.JsonSerializerOptions);
         }
         catch (HttpRequestException e)
         {
