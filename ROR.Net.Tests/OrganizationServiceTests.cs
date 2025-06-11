@@ -57,7 +57,11 @@ public class OrganizationServiceTests
         Organization organization = new()
         {
             Id = "123",
-            Types = [OrganizationType.Facility],
+            Types =
+            [
+                OrganizationType.Facility
+            ],
+            Name = "Test Organization",
         };
         _httpMessageHandlerMock.Protected()
             .Setup<Task<HttpResponseMessage>>(
