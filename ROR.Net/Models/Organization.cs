@@ -16,6 +16,12 @@ public class Organization
     public required string Id { get; set; }
     
     /// <summary>
+    /// The name of the organization, as it is known in ROR.
+    /// </summary>
+    [JsonPropertyName("name")]
+    public required string Name { get; set; }
+    
+    /// <summary>
     /// The domains registered to a particular institution, not including the protocol, path portions,
     /// or query parameters that may exist in the URL for the organization's website.
     /// An organization's website is stored in the <see cref="Links" /> field.

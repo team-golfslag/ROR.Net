@@ -59,7 +59,11 @@ public class OrganizationQueryBuilderTests
         Organization organization = new()
         {
             Id = "123",
-            Types = [OrganizationType.Facility],
+            Types =
+            [
+                OrganizationType.Facility
+            ],
+            Name = "Test Organization",
         };
 
         ResultMetadata metadata = new()
